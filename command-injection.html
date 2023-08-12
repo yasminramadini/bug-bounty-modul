@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>OS Command Injection</h1>
+    <section>
+      <p><b>A. Simple command injection</b></p>
+      <ol>
+        <li>
+          Misalnya sebuah web memiliki fitur check stok produk yang mengirim
+          parameter ID ke backend
+        </li>
+        <li>
+          Cobalah masukkan perintah berikut:
+          <div class="demo">1|whoami</div>
+          Jika vulner, maka akan menghasilkan nama user saat ini
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <p><b>B. Blind OS Command Injection dengan time delay</b></p>
+      <ol>
+        <li>Misalnya suatu web menyediakan submit feedback.</li>
+        <li>
+          Pada kolom email misalnya, kita bisa masukkan command:
+          <div class="demo">email=x||ping+-c+10+127.0.0.1||</div>
+          Jika vulner, maka akan delay 10 detik
+        </li>
+      </ol>
+    </section>
+  </body>
+</html>
